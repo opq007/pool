@@ -4,8 +4,20 @@ import subprocess
 import threading
 import time
 from http.server import HTTPServer, BaseHTTPRequestHandler
-
-print("===== HF Proxy Node Starting =====", flush=True)
+import urllib.request
+import json
+url = "http://ip-api.com/json"
+try:
+    with urllib.request.urlopen(url, timeout=5) as response:
+        # 读取字节数据
+        result = response.read()        
+        # 转为字符串再解析 JSON
+        data = json.loads(result.decode("utf-8"))
+        print("返回结果：")
+        print(data)
+except Exception as e:
+    print("请求失败：", e)
+print("===== Node Starting =====", flush=True)
 
 ####################################
 # 读取 Secrets
