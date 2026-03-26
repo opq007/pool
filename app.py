@@ -28,9 +28,13 @@ FRP_SERVER_PORT = os.environ.get("FRP_SERVER_PORT", "80")
 FRP_TOKEN = os.environ.get("FRP_TOKEN","")
 
 PROXY_PORT = int(os.environ.get("PROXY_PORT","1080"))
+REMOTE_PORT = int(os.environ.get("REMOTE_PORT","6000"))  # 远程端口，默认 6000
 
 SOCKS_PORT = PROXY_PORT + 1
 WEB_PORT = os.environ.get("PORT","10000")
+
+# 额外 gost 监听配置：格式为 "协议://地址:端口"，例如 "http://0.0.0.0:8080"
+GOST_EXTRA_LISTEN = os.environ.get("GOST_EXTRA_LISTEN","")
 
 # NODE_NAME = os.environ.get("NODE_NAME") or socket.gethostname()
 # 1️⃣ 尝试读取用户自定义 NODE_NAME
@@ -62,7 +66,7 @@ type = "tcp"
 localIP = "127.0.0.1"
 localPort = {PROXY_PORT}
 
-remotePort = 6000
+remotePort = {REMOTE_PORT}
 
 loadBalancer.group = "proxy_pool"
 loadBalancer.groupKey = "poolkey"
@@ -81,12 +85,17 @@ print("===== frpc.toml =====", flush=True)
 
 print("Starting gost...", flush=True)
 
-gost_process = subprocess.Popen(
-[
-"/usr/local/bin/gost",
-"-L",f"socks5://127.0.0.1:1080"
+gost_cmd = [
+    "/usr/local/bin/gost",
+    "-L", f"socks5://127.0.0.1:{PROXY_PORT}"
 ]
-)
+
+# 如果设置了额外的监听地址，添加到命令中
+if GOST_EXTRA_LISTEN:
+    print(f"Extra gost listen: {GOST_EXTRA_LISTEN}", flush=True)
+    gost_cmd.extend(["-L", GOST_EXTRA_LISTEN])
+
+gost_process = subprocess.Popen(gost_cmd)
 
 ####################################
 # 启动 frpc
