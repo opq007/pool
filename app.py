@@ -31,7 +31,7 @@ PROXY_PORT = int(os.environ.get("PROXY_PORT","1080"))
 REMOTE_PORT = int(os.environ.get("REMOTE_PORT","6000"))  # 远程端口，默认 6000
 
 SOCKS_PORT = PROXY_PORT + 1
-WEB_PORT = os.environ.get("PORT","10000")
+WEB_PORT = int(os.environ.get("PORT", "7860"))
 
 # 额外 gost 监听配置：格式为 "协议://地址:端口"，例如 "http://0.0.0.0:8080"
 GOST_EXTRA_LISTEN = os.environ.get("GOST_EXTRA_LISTEN","")
