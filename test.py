@@ -87,7 +87,7 @@ print("===== frpc.toml =====", flush=True)
 print("Starting gost...", flush=True)
 
 gost_cmd = [
-    "/usr/local/bin/gost",
+    "/app/gost",
     "-L", f"socks5://127.0.0.1:{PROXY_PORT}"
 ]
 
@@ -96,7 +96,7 @@ if GOST_EXTRA_LISTEN:
     print(f"Extra gost listen……", flush=True)
     gost_cmd.extend(["-L", GOST_EXTRA_LISTEN])
 
-# gost_process = subprocess.Popen(gost_cmd)
+gost_process = subprocess.Popen(gost_cmd)
 
 ####################################
 # 启动 frpc
@@ -104,29 +104,29 @@ if GOST_EXTRA_LISTEN:
 
 print("Starting frpc...", flush=True)
 
-# frpc_process = subprocess.Popen(
-# [
-# "/usr/local/bin/frpc",
-# "-c",
-# "/app/frpc.toml"
-# ]
-# )
+frpc_process = subprocess.Popen(
+[
+"/app/frpc",
+"-c",
+"/app/frpc.toml"
+]
+)
 
 ####################################
 # 检查进程
 ####################################
 
-# def monitor():
-#     while True:
-#         if gost_process.poll() is not None:
-#             print("gost stopped!", flush=True)
+def monitor():
+    while True:
+        if gost_process.poll() is not None:
+            print("gost stopped!", flush=True)
 
-#         if frpc_process.poll() is not None:
-#             print("frpc stopped!", flush=True)
+        if frpc_process.poll() is not None:
+            print("frpc stopped!", flush=True)
 
-#         time.sleep(10)
+        time.sleep(10)
 
-# threading.Thread(target=monitor, daemon=True).start()
+threading.Thread(target=monitor, daemon=True).start()
 
 ####################################
 # HF health server
